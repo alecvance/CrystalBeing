@@ -1,3 +1,8 @@
+import peasy.test.*;
+import peasy.org.apache.commons.math.*;
+import peasy.*;
+import peasy.org.apache.commons.math.geometry.*;
+
 int numSteps =5;
 float len = 280;
 float stub = 3;
@@ -13,6 +18,9 @@ void setup() {
 
   smooth();
   colorMode(RGB, 255);
+  
+  PeasyCam camera = new PeasyCam(this, 500);
+
 }
 
 void draw() {
@@ -34,8 +42,8 @@ void draw() {
   float interval =  2*PI / numSteps; 
   float colorInterval = 200 / numSteps;
 
-  pushMatrix();
-  translate(width/2, height/2, -10);
+ // pushMatrix();
+ // translate(width/2, height/2, -10);
 
   for (int a = 0;  a< numSteps; a++) {
 
@@ -77,6 +85,6 @@ void draw() {
     popMatrix();
   }
 
-  popMatrix();
+ // popMatrix();
 }
 
