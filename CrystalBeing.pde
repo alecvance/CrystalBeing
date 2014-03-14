@@ -5,6 +5,8 @@
  *
  * inspired by an old Star Trek episode...
  *
+ * click and drag to move camera. shift to pan camera
+ *
  */
 
 // import PeasyCam library
@@ -18,16 +20,16 @@ float radius = 280; // the radius of the sphere
 float stub = 3;
 
 /* these are the variables that store the incrementing 3D translations 
-   so we can see the sphere rotate
-   */
+ so we can see the sphere rotate
+ */
 float rotX = 0.0;
 float rotY = 0.0;
 float rotZ = 0.0;
 
 float stepInc = 0.0;
 
-PVector panStartPos, totalPan, centerPos;
-boolean isPanning, shiftDown;
+PVector lastMouse, totalPan, centerPos;
+boolean isPanning;
 PeasyCam camera;
 
 void setup() {
@@ -35,14 +37,8 @@ void setup() {
   background(0);
   smooth();
   colorMode(RGB, 255);
-  totalPan = new PVector(0, 0);  
-//  centerPos = new PVector(width/2, height/2); // with peasyCam off
-  centerPos = new PVector(0, 0); // with peasyCam ON
-  
-  // panStartPos  = new PVector(0,0);
 
   isPanning = false;
-  shiftDown = false;
 
   camera = new PeasyCam(this, 600);
 }
@@ -50,24 +46,14 @@ void setup() {
 void draw() {
 
   //is shift key currently being pressed?
-  if (shiftDown) {
-    if (! isPanning) {
-      // we weren't panning, so start panning
-      isPanning = true;
-      // "home" position of the mouse
-      panStartPos = new PVector(mouseX - totalPan.x, mouseY - totalPan.y);
-    } 
-    else {
-      // we were panning already, so find the total vector the mouse has traveled since the shift key was first pressed
-      totalPan = new PVector(mouseX - panStartPos.x, mouseY - panStartPos.y);
-    }
-  }  
-  else {
-    // shift is NOT down
-    isPanning = false;
-    //totalPan = new PVector(0, 0);
-  }
+  if (isPanning) {
 
+    // find the distance the mouse has traveled since the last loop
+    PVector mouse = new PVector(mouseX, mouseY);
+    PVector mouseDiff = PVector.sub(mouse,lastMouse);
+    camera.pan(mouseDiff.x, mouseDiff.y);
+    lastMouse = mouse;
+  }  
 
   background(0);
   frameRate(30);
@@ -86,9 +72,7 @@ void draw() {
   float interval =  2*PI / numSteps; 
   float colorInterval = 200 / numSteps;
 
-  pushMatrix();
-  // translate(width/2, height/2, -10);
-  translate(centerPos.x + totalPan.x, centerPos.y + totalPan.y, 0+10);
+  // pushMatrix(); translate(width/2, height/2, -10); // with no camera
 
   for (int a = 0;  a< numSteps; a++) {
 
@@ -114,7 +98,7 @@ void draw() {
         stroke(50+b*colorInterval, 50+a*colorInterval, 50+c*colorInterval, 200);
 
         float len = radius; 
-        line(0, 10, 0, -len);
+        line(0, 0, 0, -len);
         line(-stub, -len, stub, -len);
 
         rotateY(PI/3);
@@ -131,33 +115,31 @@ void draw() {
     popMatrix();
   }
 
-  popMatrix();
+  //  popMatrix(); // with no camera
 }
 
 void keyPressed()
 {
   if (key == CODED && keyCode == SHIFT) {
-    shiftDown = true;
+    // we weren't panning, so start panning
+    isPanning = true;
+    // "home" position of the mouse
+    lastMouse = new PVector(mouseX, mouseY );
   } 
-  
-  if(key == 'r'){
+
+  if (key == 'r') {
     //reset!
-    
+
     isPanning = false;
-      totalPan = new PVector(0, 0);  
-  //  centerPos = new PVector(width/2, height/2); // with peasyCam off
-      centerPos = new PVector(0, 0); // with peasyCam ON
-  camera.reset();
-
-
+    //  centerPos = new PVector(width/2, height/2); // with peasyCam off
+    camera.reset();
   }
-  
-
 }
 
 void keyReleased()
 {
   if (key == CODED && keyCode == SHIFT) {
-    shiftDown = false;
-  } 
+    isPanning = false;
+  }
 }
+
