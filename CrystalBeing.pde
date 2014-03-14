@@ -17,7 +17,7 @@ import peasy.org.apache.commons.math.geometry.*;
 
 int numSteps = 5; // how many steps to draw within each circle (360 degrees or 2 PI radians)
 float radius = 280; // the radius of the sphere
-float stub = 3;
+float stub = 3; // length of each of the star-shaped branches at the end of each line
 
 /* these are the variables that store the incrementing 3D translations 
  so we can see the sphere rotate
@@ -65,8 +65,11 @@ void draw() {
 
   //  rotZ = rotZ + .0005;
   stepInc = stepInc + 0.02;
+if( int(3.0 + stepInc) > numSteps){
 
   numSteps = int(3.0 + stepInc);
+  println("Divisions per circle: "+numSteps);
+}
 
   float x, y, z;
   float interval =  2*PI / numSteps; 
@@ -129,9 +132,7 @@ void keyPressed()
 
   if (key == 'r') {
     //reset!
-
     isPanning = false;
-    //  centerPos = new PVector(width/2, height/2); // with peasyCam off
     camera.reset();
   }
 }
